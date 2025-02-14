@@ -1,0 +1,67 @@
+%%{init: {'theme': 'neutral'}}%%
+sequenceDiagram
+    participant C as Client
+    participant API as API Layer
+    participant F as Facade
+    participant M as Models
+    participant DB as Database
+
+    %% 1. User Registration
+    rect rgb(200, 230, 255)
+    Note over C,DB: User Registration
+    C->>+API: POST /api/users (email, password, name)
+    API->>+F: create_user(email, password, name)
+    F->>+M: User(email, password, name)
+    M-->>-F: new_user
+    F->>+DB: save(new_user)
+    DB-->>-F: success
+    F-->>-API: user_object
+    API-->>-C: 201 Created (user_data)
+    end
+
+    %% 2. Place Creation
+    rect rgb(230, 200, 255)
+    Note over C,DB: Place Creation
+    C->>+API: POST /api/places (name, description, price, location)
+    API->>+F: verify_user_auth()
+    F-->>-API: auth_ok
+    API->>+F: create_place(data)
+    F->>+M: Place(name, description, price, location)
+    M-->>-F: new_place
+    F->>+DB: save(new_place)
+    DB-->>-F: success
+    F-->>-API: place_object
+    API-->>-C: 201 Created (place_data)
+    end
+
+    %% 3. Review Submission
+    rect rgb(255, 200, 200)
+    Note over C,DB: Review Submission
+    C->>+API: POST /api/places/{id}/reviews (content, rating)
+    API->>+F: verify_user_auth()
+    F-->>-API: auth_ok
+    API->>+F: get_place(place_id)
+    F->>+DB: query(place_id)
+    DB-->>-F: place_data
+    F-->>-API: place_object
+    API->>+F: create_review(place_id, content, rating)
+    F->>+M: Review(place_id, content, rating)
+    M-->>-F: new_review
+    F->>+DB: save(new_review)
+    DB-->>-F: success
+    F-->>-API: review_object
+    API-->>-C: 201 Created (review_data)
+    end
+
+    %% 4. Fetching Places List
+    rect rgb(200, 255, 200)
+    Note over C,DB: Fetching Places List
+    C->>+API: GET /api/places?filters
+    API->>+F: get_places(filters)
+    F->>+DB: query(filters)
+    DB-->>-F: places_data
+    F->>+M: build_places_list(places_data)
+    M-->>-F: places_objects
+    F-->>-API: places_list
+    API-->>-C: 200 OK (places_list)
+    end
