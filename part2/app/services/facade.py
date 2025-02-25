@@ -1,7 +1,7 @@
 from app.persistence.repository import InMemoryRepository
 from typing import List, Dict
 from datetime import datetime
-from models.review import Review
+from app.models.review import Review
 from models.user import User
 from models.exceptions import ResourceNotFoundError, ValidationError
 
