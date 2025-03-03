@@ -68,9 +68,22 @@ https://intranet.hbtn.io/rltoken/st27KOWY_W8fOCuML6Yyqw
 4-Facade Design Pattern:
 
 https://intranet.hbtn.io/rltoken/AMfTkS5vRskcnzTPI6grUQ
+
 ## Contributors
 https://github.com/korneevscp
 
 https://github.com/DQE92
 
 https://github.com/Lucawinwin
+
+## Requirement 
+relire pyton3 et PIP :   https://docs.python-guide.org/starting/install3/linux/ 
+flask
+flask-restx
+pip install flask flask-restx
+python3 -m pip install flask flask-restx
+source venv/bin/activate
+python run.py
+chmod 777 run.py
+./run.py
+python -m pip show flask

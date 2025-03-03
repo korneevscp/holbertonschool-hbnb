@@ -1,2 +1,11 @@
 flask
 flask-restx
+relire pyton3 et PIP :https://docs.python-guide.org/starting/install3/linux/
+pip install flask flask-restx
+python3 -m pip install flask flask-restx
+source venv/bin/activate
+python run.py
+chmod 777 run.py
+./run.py
+ python -m pip show flask
+
