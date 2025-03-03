@@ -76,14 +76,35 @@ https://github.com/DQE92
 
 https://github.com/Lucawinwin
 
-## Requirement 
-relire pyton3 et PIP :   https://docs.python-guide.org/starting/install3/linux/ 
-flask
-flask-restx
-pip install flask flask-restx
-python3 -m pip install flask flask-restx
-source venv/bin/activate
-python run.py
-chmod 777 run.py
-./run.py
-python -m pip show flask
+## install prerequisite :
+
+OS : ubuntu 22.0
+
+```bash
+  sudo apt update && sudo apt upgrade -y
+
+  sudo apt install python3 -y
+
+  sudo apt install python3-pip -y
+
+  git clone https://github.com/korneevscp/holbertonschool-hbnb.git
+```
+
+```bash
+
+  pip install flask flask-restx
+
+  python3 -m pip install flask flask-restx
+
+  sudo apt install python3-venv -y
+
+  cd holbertonschool-hbnb/part2
+
+  python3 -m venv test
+  source venv/bin/activate
+  pip install test
+
+  python run.py
+```
+
+
