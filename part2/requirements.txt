@@ -8,4 +8,4 @@ python run.py
 chmod 777 run.py
 ./run.py
  python -m pip show flask
-
+flask-bcrypt
