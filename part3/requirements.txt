@@ -1,5 +1,6 @@
 flask
 flask-restx
+flask-bcrypt
 relire pyton3 et PIP :https://docs.python-guide.org/starting/install3/linux/
 pip install flask flask-restx
 python3 -m pip install flask flask-restx
