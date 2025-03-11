@@ -1,14 +1,17 @@
 from flask_restx import Namespace, Resource, fields
 from flask import request
 from app.services.facade import HBnBFacade
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 api = Namespace('users', description='User operations')
 facade = HBnBFacade()
 
-# Modèle utilisateur pour validation
+# Modèle utilisateur pour validation des mises à jour
 user_update_model = api.model('UserUpdate', {
     'first_name': fields.String(description="User's first name"),
-    'last_name': fields.String(description="User's last name")
+    'last_name': fields.String(description="User's last name"),
+    'email': fields.String(description="User's email"),
+    'password': fields.String(description="User's password")
 })
 
 @api.route('/')
@@ -52,18 +55,18 @@ class UserResource(Resource):
             'email': user.email
         }, 200
 
+    @jwt_required()  # Assurez-vous que l'utilisateur est authentifié
     @api.expect(user_update_model, validate=True)
     @api.response(200, 'User updated successfully')
     @api.response(403, 'Forbidden: You can only edit your own information')
+    @api.response(400, 'You cannot modify the email or password')
     @api.response(404, 'User not found')
     def put(self, user_id):
         """Update user information (only first name and last name)"""
-        user_data = api.payload
-        if not user_data:
-            return {'error': 'No input data'}, 400
+        # Récupérer l'utilisateur actuel (obtenu depuis le token JWT)
+        current_user_id = get_jwt_identity()
 
-        # Récupérer l'utilisateur actuel (simulation d'authentification avec un paramètre user_id)
-        current_user_id = request.args.get('user_id')  # Supposons qu'on passe l'user_id en paramètre de requête
+        # Vérifier que l'utilisateur authentifié correspond à l'utilisateur que l'on tente de modifier
         if current_user_id != user_id:
             return {'error': 'Forbidden: You can only edit your own information'}, 403
 
@@ -72,7 +75,14 @@ class UserResource(Resource):
         if not user:
             return {'error': 'User not found'}, 404
 
-        # Modifier uniquement les champs autorisés
+        # Récupérer les données envoyées
+        user_data = api.payload
+
+        # Vérifier si l'email ou le mot de passe ont été modifiés
+        if 'email' in user_data or 'password' in user_data:
+            return {'error': 'You cannot modify the email or password'}, 400
+
+        # Filtrer les champs autorisés (first_name, last_name)
         updated_data = {}
         if 'first_name' in user_data:
             updated_data['first_name'] = user_data['first_name']
@@ -83,3 +93,4 @@ class UserResource(Resource):
         facade.update_user(user_id, updated_data)
 
         return {'message': 'User updated successfully'}, 200
+
