@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Liste des lieux</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="./base_files/images/icon.png" type="image/png">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <img src="./base_files/images/logo.png" alt="Logo de l'application" class="logo" />
+      <nav>
+        <a href="index.html" class="nav-link">Accueil</a>
+        <a href="login.html" id="login-link" class="nav-link login-button">Connexion</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <section>
+      <h1>Nos lieux disponibles</h1>
+
+      <label for="price-filter">Filtrer par prix (max):</label>
+      <select id="price-filter">
+        <option value="all">Tous</option>
+        <option value="10">10€</option>
+        <option value="50">50€</option>
+        <option value="100">100€</option>
+      </select>
+
+      <div id="places-list" class="places-container">
+        <!-- Les lieux seront injectés ici en JS -->
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 - Tous droits réservés.</p>
+  </footer>
+
+  <script>
+    // Fonction pour récupérer le cookie (token)
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    // Vérifie si l'utilisateur est connecté
+    function checkAuthentication() {
+      const token = getCookie('token');
+      const loginLink = document.getElementById('login-link');
+
+      if (!token) {
+        loginLink.style.display = 'block';
+      } else {
+        loginLink.style.display = 'none';
+        fetchPlaces(token);
+      }
+    }
+
+    // Simuler un appel API (à remplacer par un fetch réel)
+    async function fetchPlaces(token) {
+      // Données simulées
+      const places = [
+        { name: "Cabane en bois", price: 45, location: "Forêt", id: 1 },
+        { name: "Studio urbain", price: 80, location: "Paris", id: 2 },
+        { name: "Appartement de luxe", price: 120, location: "Nice", id: 3 },
+        { name: "Tente safari", price: 10, location: "Nature", id: 4 }
+      ];
+      displayPlaces(places);
+    }
+
+    // Générer les cartes de lieux
+    function displayPlaces(places) {
+      const list = document.getElementById("places-list");
+      list.innerHTML = '';
+
+      places.forEach(place => {
+        const card = document.createElement("div");
+        card.className = "place-card";
+        card.setAttribute("data-price", place.price);
+        card.innerHTML = `
+          <h2>${place.name}</h2>
+          <p>Prix : ${place.price}€/nuit</p>
+          <p>Lieu : ${place.location}</p>
+          <a href="place.html?id=${place.id}" class="details-button">Voir les détails</a>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    // Filtrage par prix
+    document.getElementById("price-filter").addEventListener("change", function () {
+      const value = this.value;
+      const cards = document.querySelectorAll(".place-card");
+
+      cards.forEach(card => {
+        const price = parseInt(card.getAttribute("data-price"));
+        if (value === "all" || price <= parseInt(value)) {
+          card.style.display = "block";
+        } else {
+          card.style.display = "none";
+        }
+      });
+    });
+
+    // Initialisation
+    window.addEventListener("DOMContentLoaded", () => {
+      checkAuthentication();
+      // Pour test sans token :
+      // fetchPlaces();
+    });
+  </script>
+</body>
+</html>
+
