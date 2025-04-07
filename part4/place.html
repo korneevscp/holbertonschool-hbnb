@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Détails du lieu</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="./base_files/images/icon.png" type="image/png">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <img src="./base_files/images/logo.png" alt="Logo de l'application" class="logo" />
+      <nav>
+        <a href="index.html" class="nav-link">Accueil</a>
+        <a href="login.html" id="login-link" class="nav-link login-button">Connexion</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <section class="place-details">
+      <h1 id="place-name">Nom du lieu</h1>
+      <div class="place-info">
+        <p><strong>Hôte :</strong> <span id="host-name">Chargement...</span></p>
+        <p><strong>Prix :</strong> <span id="place-price">--</span>€/nuit</p>
+        <p><strong>Description :</strong></p>
+        <p id="place-description">...</p>
+        <p><strong>Commodités :</strong> <span id="place-amenities">...</span></p>
+      </div>
+    </section>
+
+    <section id="reviews-section">
+      <h2>Avis des utilisateurs</h2>
+      <div id="reviews-list" class="reviews-container">
+        <!-- Avis injectés ici -->
+      </div>
+    </section>
+
+    <section id="review-action">
+      <!-- Formulaire ou bouton d'ajout d'avis (si connecté) -->
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 - Tous droits réservés.</p>
+  </footer>
+
+  <script>
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    function checkAuthentication() {
+      const token = getCookie("token");
+      const loginLink = document.getElementById("login-link");
+      const reviewAction = document.getElementById("review-action");
+
+      if (!token) {
+        loginLink.style.display = "block";
+        reviewAction.innerHTML = '<p><a href="login.html" class="details-button">Connectez-vous pour laisser un avis</a></p>';
+      } else {
+        loginLink.style.display = "none";
+        reviewAction.innerHTML = `
+          <div class="add-review form">
+            <h3>Laisser un avis</h3>
+            <form id="review-form">
+              <label for="comment">Commentaire</label>
+              <textarea id="comment" required></textarea>
+
+              <label for="rating">Note</label>
+              <select id="rating" required>
+                <option value="5">5 ⭐</option>
+                <option value="4">4 ⭐</option>
+                <option value="3">3 ⭐</option>
+                <option value="2">2 ⭐</option>
+                <option value="1">1 ⭐</option>
+              </select>
+
+              <button type="submit" class="submit-button">Envoyer</button>
+            </form>
+          </div>
+        `;
+
+        document.getElementById("review-form").addEventListener("submit", function (e) {
+          e.preventDefault();
+          alert("Avis soumis (simulation)");
+        });
+      }
+    }
+
+    // Simule chargement des données
+    function loadPlaceDetails() {
+      const place = {
+        name: "Cabane en bois",
+        host: "Julien",
+        price: 45,
+        description: "Une jolie cabane au cœur de la forêt. Parfaite pour une escapade nature.",
+        amenities: "Wi-Fi, cheminée, terrasse"
+      };
+
+      document.getElementById("place-name").textContent = place.name;
+      document.getElementById("host-name").textContent = place.host;
+      document.getElementById("place-price").textContent = place.price;
+      document.getElementById("place-description").textContent = place.description;
+      document.getElementById("place-amenities").textContent = place.amenities;
+    }
+
+    function loadReviews() {
+      const reviews = [
+        { user: "Alice", comment: "Super endroit, très calme !", rating: 5 },
+        { user: "Bob", comment: "Très sympa mais un peu froid la nuit", rating: 4 }
+      ];
+
+      const container = document.getElementById("reviews-list");
+      reviews.forEach(r => {
+        const div = document.createElement("div");
+        div.className = "review-card";
+        div.innerHTML = `
+          <p><strong>${r.user}</strong> - ${r.rating} ⭐</p>
+          <p>${r.comment}</p>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      checkAuthentication();
+      loadPlaceDetails();
+      loadReviews();
+    });
+  </script>
+</body>
+</html>
+

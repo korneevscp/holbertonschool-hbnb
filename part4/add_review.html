@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ajouter un avis</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="./base_files/images/icon.png" type="image/png">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <img src="./base_files/images/logo.png" alt="Logo" class="logo" />
+      <nav>
+        <a href="index.html" class="nav-link">Accueil</a>
+        <a href="login.html" id="login-link" class="nav-link login-button">Connexion</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <section class="add-review form">
+      <h1>Ajouter un avis</h1>
+      <form id="review-form">
+        <label for="comment">Votre commentaire</label>
+        <textarea id="comment" name="comment" required></textarea>
+
+        <label for="rating">Votre note</label>
+        <select id="rating" name="rating" required>
+          <option value="5">5 ⭐</option>
+          <option value="4">4 ⭐</option>
+          <option value="3">3 ⭐</option>
+          <option value="2">2 ⭐</option>
+          <option value="1">1 ⭐</option>
+        </select>
+
+        <button type="submit" class="submit-button">Envoyer l'avis</button>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 - Tous droits réservés.</p>
+  </footer>
+
+  <script>
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+
+    function checkAuthAndRedirect() {
+      const token = getCookie('token');
+      const loginLink = document.getElementById('login-link');
+
+      if (!token) {
+        alert("Vous devez être connecté pour ajouter un avis.");
+        window.location.href = "login.html";
+      } else {
+        loginLink.style.display = 'none';
+      }
+    }
+
+    document.getElementById("review-form").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const comment = document.getElementById("comment").value;
+      const rating = document.getElementById("rating").value;
+
+      // Simulation en local
+      alert(`Avis soumis !\nNote : ${rating} ⭐\nCommentaire : ${comment}`);
+
+      // Redirect back
+      window.location.href = "place.html";
+    });
+
+    window.addEventListener("DOMContentLoaded", checkAuthAndRedirect);
+  </script>
+</body>
+</html>
+
