@@ -91,7 +91,8 @@ document.addEventListener('DOMContentLoaded', () => {
  */
 async function loginUser(email, password) {
     try {
-        const response = await fetch('/api/login', {
+        // Connect to the auth/login endpoint
+        const response = await fetch('/api/v1/auth/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -102,18 +103,19 @@ async function loginUser(email, password) {
         // Process the response
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.message || `Login failed: ${response.statusText}`);
+            throw new Error(errorData.error || errorData.message || `Login failed: ${response.statusText}`);
         }
         
         // Extract and store the token
         const data = await response.json();
         
-        if (!data.token && !data.access_token) {
+        // Your API returns an access_token
+        if (!data.access_token) {
             throw new Error('Invalid server response: No token provided');
         }
         
-        // Store the token (checking for different possible property names)
-        const token = data.token || data.access_token;
+        // Store the token
+        const token = data.access_token;
         
         // Set cookie with a 7-day expiration
         const expirationDate = new Date();
