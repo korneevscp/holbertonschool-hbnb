@@ -31,34 +31,11 @@
       </select>
 
       <div id="places-list" class="places-container">
-        function displayPlaces(places) {
-    // Clear the current content of the places list
-    const placesList = document.getElementById('places-list');
-    placesList.innerHTML = '';
-    
-    // Iterate over the places data
-    places.forEach(place => {
-        // For each place, create a div element and set its content
-        const placeElement = document.createElement('div');
-        placeElement.className = 'place-card';
-        placeElement.setAttribute('data-price', place.price);
-        
-        placeElement.innerHTML = `
             <h2>${place.name}</h2>
             <p>Prix : ${place.price}€/nuit</p>
             <p>Lieu : ${place.location}</p>
             <a href="place.html?id=${place.id}" class="details-button">Voir les détails</a>
-        `;
-        
-        // Append the created element to the places list
-        placesList.appendChild(placeElement);
-    });
-    
-    // Si aucun lieu n'est disponible, afficher un message
-    if (places.length === 0) {
-        placesList.innerHTML = '<p class="no-places">Aucun lieu disponible pour le moment.</p>';
-    }
-}
+            <p class="no-places">Aucun lieu disponible pour le moment.</p>
       </div>
     </section>
   </main>
