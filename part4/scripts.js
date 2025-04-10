@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
 async function loginUser(email, password) {
     try {
         // Connect to the auth/login endpoint
-        const response = await fetch('/api/v1/auth/login', {
+        const response = await fetch('http://localhost:5050/hbnb/app/api/v1/auth/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -149,3 +149,146 @@ function getCookie(name) {
     
     return null;
 }
+
+// Function to get a cookie value by its name
+function getCookie(name) {
+    const cookieString = document.cookie;
+    const cookies = cookieString.split('; ');
+    
+    for (const cookie of cookies) {
+      const [cookieName, cookieValue] = cookie.split('=');
+      if (cookieName === name) {
+        return cookieValue;
+      }
+    }
+    
+    return null;
+  }
+  
+  // Check user authentication
+  function checkAuthentication() {
+    const token = getCookie('token');
+    const loginLink = document.getElementById('login-link');
+  
+    if (!token) {
+      loginLink.style.display = 'block';
+      // Even if not authenticated, still fetch places
+      fetchPlaces(null);
+    } else {
+      loginLink.style.display = 'none';
+      // Fetch places data with the authentication token
+      fetchPlaces(token);
+    }
+  }
+  
+  // Fetch places data from the API
+  async function fetchPlaces(token) {
+    try {
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+      
+      // Add authorization header if token exists
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+      
+      const response = await fetch('http://localhost:5050/hbnb/app/api/v1/places', {
+        method: 'GET',
+        headers: headers
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Error fetching places: ${response.statusText}`);
+      }
+      
+      const places = await response.json();
+      // Store the places data globally so we can filter it
+      window.placesData = places;
+      displayPlaces(places);
+      
+      // Initialize price filter
+      setupPriceFilter();
+    } catch (error) {
+      console.error('Failed to fetch places:', error);
+      document.getElementById('places-list').innerHTML = 
+        '<div class="error-message">Failed to load places. Please try again later.</div>';
+    }
+  }
+  
+  // Display places in the DOM
+  function displayPlaces(places) {
+    const placesList = document.getElementById('places-list');
+    // Clear current content
+    placesList.innerHTML = '';
+    
+    if (places.length === 0) {
+      placesList.innerHTML = '<div class="no-places">No places found matching your criteria.</div>';
+      return;
+    }
+    
+    // Create and append place cards
+    places.forEach(place => {
+      const placeCard = document.createElement('div');
+      placeCard.className = 'place-card';
+      placeCard.dataset.price = place.price; // Store price for filtering
+      
+      placeCard.innerHTML = `
+        <h3>${place.name}</h3>
+        <p class="location"><i class="fa fa-map-marker"></i> ${place.location}</p>
+        <p class="description">${place.description}</p>
+        <div class="price-tag">$${place.price}</div>
+      `;
+      
+      placesList.appendChild(placeCard);
+    });
+  }
+  
+  // Setup price filter functionality
+  function setupPriceFilter() {
+    const priceFilter = document.getElementById('price-filter');
+    
+    // Clear existing options
+    priceFilter.innerHTML = '';
+    
+    // Add price filter options
+    const options = [
+      { value: '10', text: '$0 - $10' },
+      { value: '50', text: '$0 - $50' },
+      { value: '100', text: '$0 - $100' },
+      { value: 'All', text: 'All Prices' }
+    ];
+    
+    options.forEach(option => {
+      const optionElement = document.createElement('option');
+      optionElement.value = option.value;
+      optionElement.textContent = option.text;
+      priceFilter.appendChild(optionElement);
+    });
+    
+    // Add event listener for price filter changes
+    priceFilter.addEventListener('change', filterPlacesByPrice);
+  }
+  
+  // Filter places based on selected price
+  function filterPlacesByPrice(event) {
+    const selectedPrice = event.target.value;
+    const places = window.placesData || [];
+    
+    let filteredPlaces;
+    
+    if (selectedPrice === 'All') {
+      filteredPlaces = places;
+    } else {
+      const maxPrice = parseInt(selectedPrice, 10);
+      filteredPlaces = places.filter(place => place.price <= maxPrice);
+    }
+    
+    displayPlaces(filteredPlaces);
+  }
+  
+  // Initialize the page
+  document.addEventListener('DOMContentLoaded', () => {
+    // Check authentication status when page loads
+    checkAuthentication();
+  });
